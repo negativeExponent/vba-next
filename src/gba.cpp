@@ -12416,6 +12416,20 @@ void CPUUpdateRegister(uint32_t address, uint16_t value)
 			timerOnOffDelay|=8;
 			cpuNextEvent = cpuTotalTicks;
 			break;
+		case 0x128:
+			if (value & 0x80)
+			{
+				value &= 0xff7f;
+				if (value & 1 && (value & 0x4000))
+				{
+					UPDATE_REG(0x128, 0xFF);
+					io_registers[REG_IF] |= 0x80;
+					UPDATE_REG(0x202, io_registers[REG_IF]);
+					value &= 0x7f7f;
+				}
+			}
+			UPDATE_REG(0x128, value);
+			break;
 		case 0x130:
 			io_registers[REG_P1] |= (value & 0x3FF);
 			UPDATE_REG(0x130, io_registers[REG_P1]);
